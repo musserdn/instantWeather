@@ -1,5 +1,5 @@
-import { writeFile, readFile } from "node:fs/promises";
-import path from "node:path";
+import { writeFile, readFile } from 'node:fs/promises';
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -14,10 +14,9 @@ class City {
 
   constructor(
     cityName: string,
-    cityID: string
   ) {
     this.cityName = cityName;
-    this.cityID = cityID;
+    this.cityID = uuidv4();
   }
 }
 
