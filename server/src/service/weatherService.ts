@@ -53,8 +53,8 @@ class WeatherService {
   APIkey: string;
   cityName: string;
   constructor(
-    baseURL: string = process.env.WEATHER_API_URL || 'https://api.openweathermap.org',
-    APIkey: string = process.env.WEATHER_API_KEY || '{API key}',
+    baseURL: string = process.env.API_BASE_URL || 'https://api.openweathermap.org',
+    APIkey: string = process.env.API_KEY || '{API key}',
     cityName: string = 'Denver'
   ) {
     this.baseURL = baseURL;
@@ -65,8 +65,7 @@ class WeatherService {
   // TODO: Create fetchLocationData method
   private async fetchLocationData(query: string) {
     try {
-      const geocode = await fetch(query);
-      return geocode.json();
+      return await fetch(query);
     } catch (error) {
       console.log('Error fetching location data:', error)
       throw error;
@@ -78,7 +77,6 @@ class WeatherService {
       console.log('Invalid location data:', locationData);
       throw new Error('Invalid location data');
     }
-
     return {
       lat: locationData.lat,
       lon: locationData.lon,
@@ -96,7 +94,8 @@ class WeatherService {
   private async fetchAndDestructureLocationData() {
     const geoquery = this.buildGeocodeQuery();
     const locationData = await this.fetchLocationData(geoquery);
-    return this.destructureLocationData(locationData);
+    const parsedLocation = await locationData.json();
+    return this.destructureLocationData(parsedLocation);
   }
   // TODO: Create fetchWeatherData method
   private async fetchWeatherData(coordinates: Coordinates) {
@@ -138,18 +137,18 @@ class WeatherService {
   }
   // TODO: Complete getWeatherForCity method
   async getWeatherForCity(city: string) {
-try {
-    this.cityName = city;
-    const coordinates = await this.fetchAndDestructureLocationData();
-    const weatherData = await this.fetchWeatherData(coordinates);
-    const currentWeather = this.parseCurrentWeather(weatherData);
-    const forecastArray = this.buildForecastArray(currentWeather, weatherData.list);
-    return forecastArray
-  } catch (error) {
-    console.log('Error fetching weather data:', error);
-    throw error;
+    try {
+      this.cityName = city;
+      const coordinates = await this.fetchAndDestructureLocationData();
+      const weatherData = await this.fetchWeatherData(coordinates);
+      const currentWeather = this.parseCurrentWeather(weatherData);
+      const forecastArray = this.buildForecastArray(currentWeather, weatherData.list);
+      return forecastArray
+    } catch (error) {
+      console.log('Error fetching weather data:', error);
+      throw error;
+    }
   }
-}
 };
 
 export default new WeatherService();

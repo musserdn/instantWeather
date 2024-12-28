@@ -1,26 +1,28 @@
 import { Router, type Request, type Response } from 'express';
 const router = Router();
 
-import historyService from '../../service/historyService.js';
-import weatherService from '../../service/weatherService.js';
-// import { error } from 'console';
+import HistoryService from '../../service/historyService.js';
+import WeatherService from '../../service/weatherService.js';
 
 // TODO: POST Request with city name to retrieve weather data
-router.post('/', async (req: Request, res: Response) => {
+router.post('/', async (req, res) => {
+  try {
   // TODO: GET weather data from city name
   const cityName = req.body.cityName;
-  await weatherService.getWeatherForCity(cityName).then((weather) => {
+  const weather = await WeatherService.getWeatherForCity(cityName);
+  
     // TODO: save city to search history
-    historyService.addCity(cityName);
-    res.json(weather);
-    res.send('City added to search history and weather data retrieved');
-  });
+    await HistoryService.addCity(cityName);
+    res.json(weather);    
+  } catch (error) {
+    res.status(500).json({ message: 'Cannot fetch weather data', error});
+  }
 });
 
 // TODO: GET search history
 router.get('/history', async (_req: Request, res: Response) => { 
 try {
-const history = await historyService.getCities();
+const history = await HistoryService.getCities();
 res.json(history);
 } catch (error) {
   res.status(500).json({ message: 'Cannot fetch city history', error});
