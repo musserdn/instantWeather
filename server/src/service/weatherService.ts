@@ -10,39 +10,29 @@ interface Coordinates {
 }
 // TODO: Define a class for the Weather object
 class Weather {
-  cityName: string;
+  city: string;
   date: string;
-  temp: number; // Unit imperial:Fahrenheit
-  feelsLike: number; // Unit imperial:Fahrenheit
-  tempMin: number; // Unit imperial:Fahrenheit
-  tempMax: number; // Unit imperial:Fahrenheit
-  pressure: number; // Unit hPa
-  humidity: number; // Unit %
   icon: string;
-  description: string;
-
+  iconDescription: string;
+  tempF: number; // Unit imperial:Fahrenheit
+  windSpeed: number; // Unit imperial:mph
+  humidity: number; // Unit imperial:percentage
   constructor(
-    cityName: string,
+    city: string,
     date: string,
-    temp: number,
-    feelsLike: number,
-    tempMin: number,
-    tempMax: number,
-    pressure: number,
-    humidity: number,
     icon: string,
-    description: string
+    iconDescription: string,
+    tempF: number,
+    windSpeed: number,
+    humidity: number
   ) {
-    this.cityName = cityName;
+    this.city = city;
     this.date = date;
-    this.temp = temp;
-    this.feelsLike = feelsLike;
-    this.tempMin = tempMin;
-    this.tempMax = tempMax;
-    this.pressure = pressure;
-    this.humidity = humidity;
     this.icon = icon;
-    this.description = description;
+    this.iconDescription = iconDescription;
+    this.tempF = tempF;
+    this.windSpeed = windSpeed;
+    this.humidity = humidity;
   }
 }
 
@@ -51,15 +41,15 @@ class WeatherService {
   // TODO: Define the baseURL, API key, and city name properties
   baseURL: string;
   APIkey: string;
-  cityName: string;
+  city: string;
   constructor(
     baseURL: string = process.env.API_BASE_URL || 'https://api.openweathermap.org',
     APIkey: string = process.env.API_KEY || '{API key}',
-    cityName: string = 'Denver'
+    city: string = 'Denver'
   ) {
     this.baseURL = baseURL;
     this.APIkey = APIkey;
-    this.cityName = cityName;
+    this.city = city;
   }
 
   // TODO: Create fetchLocationData method
@@ -84,24 +74,27 @@ class WeatherService {
   }
   // TODO: Create buildGeocodeQuery method
   private buildGeocodeQuery(): string {
-    return `${this.baseURL}/geo/1.0/direct?q=${this.cityName},,US&limit=1&appid=${this.APIkey}`;
+    return `${this.baseURL}/geo/1.0/direct?q=${this.city},,US&limit=1&appid=${this.APIkey}`;
   }
   // TODO: Create buildWeatherQuery method
   private buildWeatherQuery(coordinates: Coordinates): string {
-    return `${this.baseURL}/data/2.5/forecast?lat=${coordinates.lat}&lon=${coordinates.lon}&appid=${this.APIkey}`;
+    return `${this.baseURL}/data/2.5/forecast?units=imperial&lat=${coordinates.lat}&lon=${coordinates.lon}&appid=${this.APIkey}`;
   }
   // TODO: Create fetchAndDestructureLocationData method
   private async fetchAndDestructureLocationData() {
     const geoquery = this.buildGeocodeQuery();
     const locationData = await this.fetchLocationData(geoquery);
     const parsedLocation = await locationData.json();
-    return this.destructureLocationData(parsedLocation);
+    console.log('City data was retrived as:', parsedLocation[0].name); //name is the city 
+    if (parsedLocation[0].name.length === 0) { throw new Error('Invalid city'); } //name is the city 
+    return this.destructureLocationData(parsedLocation[0]);
   }
   // TODO: Create fetchWeatherData method
   private async fetchWeatherData(coordinates: Coordinates) {
     const Wxquery = this.buildWeatherQuery(coordinates);
     try {
       const weather = await fetch(Wxquery);
+      console.log(`fetchWeatherData:${weather.status} code: ${weather.statusText}`);
       return weather.json();
     } catch (error) {
       console.log('Error fetching weather data:', error);
@@ -109,27 +102,23 @@ class WeatherService {
   }
   // TODO: Build parseCurrentWeather method
   private parseCurrentWeather(response: any) {
-    const currentWeather = response.list[0];
-    const parsedDate = dayjs(currentWeather.dt_txt).format('MM/DD/YYYY');
-    return new Weather(
-      this.cityName,
+    const parsedDate = dayjs(response.dt_txt).format('MM/DD/YYYY h:mm a Z');
+     return new Weather(
+      this.city,
       parsedDate || 'Today',
-      currentWeather.main.temp || 0,
-      currentWeather.main.feels_like || 0,
-      currentWeather.main.temp_min || 0,
-      currentWeather.main.temp_max || 0,
-      currentWeather.main.pressure || 0,
-      currentWeather.main.humidity || 0,
-      currentWeather.weather[0].icon || '01d',
-      currentWeather.weather[0].description || 'Clear sky'
-    )
+      response.weather[0].icon || '01d',
+      response.weather[0].description || 'Clear sky',
+      response.main.temp || 0,
+      response.wind.speed || 0,
+      response.main.humidity || 0,
+    );
   }
   // TODO: Complete buildForecastArray method
   private buildForecastArray(currentWeather: Weather, weatherData: any[]) {
     const fiveDayForecast = weatherData.filter((data) => {
-      return data.dt_txt.includes('12:00:00');
+      return data.dt_txt.includes('18:00:00');
     });
-    const forecastArray: any[] = [];
+    const forecastArray: Weather[] = [];
     for (let i = 0; i < fiveDayForecast.length; i++) {
       forecastArray.push(this.parseCurrentWeather(fiveDayForecast[i]));
     }
@@ -138,10 +127,13 @@ class WeatherService {
   // TODO: Complete getWeatherForCity method
   async getWeatherForCity(city: string) {
     try {
-      this.cityName = city;
+      this.city = city;
       const coordinates = await this.fetchAndDestructureLocationData();
+      console.log('Location data coordinates were retrived as:', coordinates);
       const weatherData = await this.fetchWeatherData(coordinates);
-      const currentWeather = this.parseCurrentWeather(weatherData);
+      console.log(`Weather data received status code ${weatherData.cod} and count ${weatherData.cnt} which should be 40`);
+      const currentWeather = this.parseCurrentWeather(weatherData.list[0]);
+      console.log(`current weather: ${currentWeather.iconDescription}`)
       const forecastArray = this.buildForecastArray(currentWeather, weatherData.list);
       return forecastArray
     } catch (error) {
