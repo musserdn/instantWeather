@@ -1,4 +1,5 @@
 import { Router, type Request, type Response } from 'express';
+import capitalize from 'capitalize';
 const router = Router();
 
 import HistoryService from '../../service/historyService.js';
@@ -8,7 +9,7 @@ import WeatherService from '../../service/weatherService.js';
 router.post('/', async (req, res) => {
   try {
   // TODO: GET weather data from city name
-  const cityName = req.body.cityName;
+  const cityName = capitalize.words(req.body.cityName);
   const weather = await WeatherService.getWeatherForCity(cityName);
   
     // TODO: save city to search history
@@ -30,16 +31,14 @@ res.json(history);
 });
 
 // * BONUS TODO: DELETE city from search history
-// router.delete('/history/:id', async (req: Request, res: Response) => { 
-// try {
-
-
-
-// } catch (error) {
-
-
-
-// }
-// });
-
+router.delete('/history/:id', async (req, res) => { 
+  try {
+  const id = req.params.id;
+  await HistoryService.removeCity(id);
+  res.json({ message: `City ID ${id} removed from history`});
+  } catch (error) {
+    res.status(500).json({ message: 'Cannot remove city ID', error})
+  }
+  });
+  
 export default router;

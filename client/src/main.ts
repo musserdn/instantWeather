@@ -1,4 +1,7 @@
 import './styles/jass.css';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
 
 // * All necessary DOM elements selected
 const searchForm: HTMLFormElement = document.getElementById(
@@ -75,13 +78,19 @@ const deleteCityFromHistory = async (id: string) => {
 Render Functions
 
 */
+function formatDateToLocal(isoDate: string): string {
+  return dayjs(isoDate).local().format('MM/DD/YYYY');
+}
 
 const renderCurrentWeather = (currentWeather: any): void => {
   const { city, date, icon, iconDescription, tempF, windSpeed, humidity } =
     currentWeather;
+console.log(date);
+const localDate = formatDateToLocal(date);
+console.log(localDate);
 
   // convert the following to typescript
-  heading.textContent = `${city} (${date})`;
+  heading.textContent = `${city} (${localDate})`;
   weatherIcon.setAttribute(
     'src',
     `https://openweathermap.org/img/w/${icon}.png`
@@ -122,9 +131,11 @@ const renderForecastCard = (forecast: any) => {
 
   const { col, cardTitle, weatherIcon, tempEl, windEl, humidityEl } =
     createForecastCard();
-
+    console.log(date);
+    const localDate = formatDateToLocal(date);
+console.log(localDate);
   // Add content to elements
-  cardTitle.textContent = date;
+  cardTitle.textContent = localDate;
   weatherIcon.setAttribute(
     'src',
     `https://openweathermap.org/img/w/${icon}.png`

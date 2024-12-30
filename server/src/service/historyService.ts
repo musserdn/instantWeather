@@ -20,14 +20,13 @@ class City {
   }
 }
 
-
 // TODO: Complete the HistoryService class
 class HistoryService {
   // TODO: Define a read method that reads from the searchHistory.json file
   private async read() {
-    try{
-    return await readFile(searchHistory, { flag: 'a+', encoding: 'utf8' });
-    
+    try {
+      return await readFile(searchHistory, { flag: 'a+', encoding: 'utf8' });
+
     } catch (error) {
       console.log('Cannot read city history', error);
       throw error;
@@ -56,21 +55,19 @@ class HistoryService {
     if (!cityName) {
       throw new Error('City cannot be blank');
     }
-
     // Add a unique id to the city using uuid package
     const newCity = new City(cityName);
     const cities = await this.getCities();
     const updatedCities = [...cities, newCity];
     await this.write(updatedCities);
     return newCity;
-
-    // * BONUS TODO: Define a removeCity method that removes a city from the searchHistory.json file
-    // async removeCity(id: string) {
-
-
-    // }
+  }
+  // * BONUS TODO: Define a removeCity method that removes a city from the searchHistory.json file
+  async removeCity(id: string) {
+    const cities = await this.getCities();
+    const updatedCities = cities.filter(city => city.id !== id);
+    await this.write(updatedCities);
   }
 }
-
 
 export default new HistoryService;

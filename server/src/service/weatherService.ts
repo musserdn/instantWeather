@@ -1,7 +1,8 @@
 import dotenv from 'dotenv';
-// import { error } from 'node:console';
 dotenv.config();
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc.js';
+dayjs.extend(utc);
 
 // TODO: Define an interface for the Coordinates object
 interface Coordinates {
@@ -102,21 +103,21 @@ class WeatherService {
   }
   // TODO: Build parseCurrentWeather method
   private parseCurrentWeather(response: any) {
-    const parsedDate = dayjs(response.dt_txt).format('MM/DD/YYYY h:mm a Z');
+    const parsedDate = dayjs.utc(response.dt_txt).format();
      return new Weather(
       this.city,
       parsedDate || 'Today',
       response.weather[0].icon || '01d',
       response.weather[0].description || 'Clear sky',
-      response.main.temp || 0,
-      response.wind.speed || 0,
-      response.main.humidity || 0,
+      Math.round(response.main.temp) || 0,
+      Math.round(response.wind.speed) || 0,
+      Math.round(response.main.humidity) || 0,
     );
   }
   // TODO: Complete buildForecastArray method
   private buildForecastArray(currentWeather: Weather, weatherData: any[]) {
     const fiveDayForecast = weatherData.filter((data) => {
-      return data.dt_txt.includes('18:00:00');
+      return data.dt_txt.includes('18:00:00'); // UTC 18:00:00 is Noon CST
     });
     const forecastArray: Weather[] = [];
     for (let i = 0; i < fiveDayForecast.length; i++) {
@@ -134,6 +135,7 @@ class WeatherService {
       console.log(`Weather data received status code ${weatherData.cod} and count ${weatherData.cnt} which should be 40`);
       const currentWeather = this.parseCurrentWeather(weatherData.list[0]);
       console.log(`current weather: ${currentWeather.iconDescription}`)
+      console.log('now dayjs time:', dayjs().format());
       const forecastArray = this.buildForecastArray(currentWeather, weatherData.list);
       return forecastArray
     } catch (error) {

@@ -4,27 +4,39 @@
 		"id": "24767361-0026-4552-bx1f-37d1aeze3b66"
 	},
 	{
-		"name": "Portland",
-		"id": "b95f5fcc-1010-48c5-998b-f5bfa65854cd"
-	},
-	{
 		"name": "Chippewa Falls",
 		"id": "a293c07d-24e6-4363-8085-264a16df1036"
 	},
 	{
-		"name": "Chippewa Falls",
-		"id": "3fd1c4e8-3c94-4518-9beb-e07b2e196e8b"
+		"name": "Denver",
+		"id": "7d1f9b91-feac-436f-953f-34a347e48e0a"
 	},
 	{
-		"name": "Chippewa Falls",
-		"id": "6f36e2ca-fd85-4137-83a7-8fed389a3d5a"
+		"name": "Eau Claire",
+		"id": "89303009-4770-4dd1-97a6-73b42982c21e"
 	},
 	{
-		"name": "Chippewa Falls",
-		"id": "f5786e06-e2c5-4eac-b196-1d6031cf8018"
+		"name": "San Diego",
+		"id": "1dc839e6-cfb7-49f4-9827-9730f4518616"
 	},
 	{
-		"name": "Portland",
-		"id": "ada35b56-3242-410f-b552-4cc48784abe4"
+		"name": "Park Falls",
+		"id": "fd6a9841-8b75-4504-92c1-ccd7e03e6caa"
+	},
+	{
+		"name": "Madison",
+		"id": "18753790-e4cd-4cbf-b82d-90a9ef231e17"
+	},
+	{
+		"name": "Madison",
+		"id": "61b80710-4552-44ce-9a7c-a00ca823cd4d"
+	},
+	{
+		"name": "Madison",
+		"id": "8beaea5b-639a-4484-ae2f-2008aff796b2"
+	},
+	{
+		"name": "Danbury",
+		"id": "5e6db465-ddae-4e2e-a45a-3c533b9c368a"
 	}
 ]
