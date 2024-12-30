@@ -85,9 +85,9 @@ function formatDateToLocal(isoDate: string): string {
 const renderCurrentWeather = (currentWeather: any): void => {
   const { city, date, icon, iconDescription, tempF, windSpeed, humidity } =
     currentWeather;
-console.log(date);
-const localDate = formatDateToLocal(date);
-console.log(localDate);
+  // console.log(date);
+  const localDate = formatDateToLocal(date);
+  // console.log(localDate);
 
   // convert the following to typescript
   heading.textContent = `${city} (${localDate})`;
@@ -131,9 +131,9 @@ const renderForecastCard = (forecast: any) => {
 
   const { col, cardTitle, weatherIcon, tempEl, windEl, humidityEl } =
     createForecastCard();
-    console.log(date);
-    const localDate = formatDateToLocal(date);
-console.log(localDate);
+  // console.log(date);
+  const localDate = formatDateToLocal(date);
+  // console.log(localDate);
   // Add content to elements
   cardTitle.textContent = localDate;
   weatherIcon.setAttribute(
